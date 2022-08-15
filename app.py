@@ -15,7 +15,7 @@ import pandas as pd
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-
+server = app.server
 app.layout = html.Div([
     dcc.Upload(
         id='upload-data',
@@ -50,13 +50,13 @@ def parse_contents(contents, filename, date):
             # Assume that the user uploaded a CSV file
             df = pd.read_csv(
                 io.StringIO(decoded.decode('utf-8')), header=0)
-            df.columns = ['Serial','Name','Price','Unit','Warranty','Old_Name','Weight','Unit_of_Weight']
+            df.columns = ['Serial','Name','Price','Warranty','Old_Name','Weight']
             df['Price'] = np.where(df['Exchange'] == "Core Exchange/Flat Rate", (df['Price']/2)+500, df['Price'])
 
         elif 'xls' in filename:
             # Assume that the user uploaded an excel file
             df = pd.read_excel(io.BytesIO(decoded), header=None)
-            df.columns = ['Serial','Name','Price','Unit','Warranty','Old_Name','Weight','Unit_of_Weight']
+            df.columns = ['Serial','Name','Price','Warranty','Old_Name','Weight']
             df['Price'] = np.where(df['Warranty'] == "Core Exchange/Flat Rate", (df['Price']/2)+500, df['Price'])
 
     except Exception as e:
@@ -105,4 +105,4 @@ def update_output(list_of_contents, list_of_names, list_of_dates):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True, port=1234)
+    app.run_server(debug=False, port=8080)
